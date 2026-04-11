@@ -90,39 +90,62 @@ button {
   border-radius: 5px;
 }
 
-/* BOTÓN CARRITO */
+/* 🔥 BOTÓN CARRITO PRO */
 .btn-carrito {
   position: fixed;
   right: 15px;
   bottom: 15px;
-  width: 65px;
-  height: 65px;
-  background: black;
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #000, #333);
   color: white;
   border-radius: 50%;
-  font-size: 26px;
+  font-size: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 1000;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-  transition: 0.2s;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  transition: all 0.2s ease;
+}
+
+.btn-carrito:active {
+  transform: scale(0.9);
 }
 
 .btn-carrito.animar {
-  transform: scale(1.2);
+  transform: scale(1.25);
 }
 
+/* CONTADOR */
 #contador {
   position: absolute;
-  top: -5px;
-  right: -5px;
-  background: red;
+  top: -6px;
+  right: -6px;
+  background: #ff0000;
   color: white;
-  font-size: 12px;
-  padding: 5px 8px;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 6px 9px;
   border-radius: 50%;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+/* 📱 MOBILE */
+@media (max-width: 600px) {
+  .btn-carrito {
+    width: 80px;
+    height: 80px;
+    font-size: 30px;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  #contador {
+    font-size: 14px;
+    padding: 7px 10px;
+  }
 }
 
 /* CARRITO */
@@ -157,7 +180,7 @@ button {
 /* TOAST */
 .toast {
   position: fixed;
-  bottom: 90px;
+  bottom: 100px;
   right: 20px;
   background: black;
   color: white;
@@ -221,7 +244,7 @@ button {
 
 <!-- CARRITO -->
 <div class="carrito" id="carrito">
-  <button class="cerrar" onclick="toggleCarrito()">Cerrar</button>
+  <button onclick="toggleCarrito()">Cerrar</button>
   <h2>Carrito</h2>
   <ul id="lista"></ul>
   <h3 id="total">Total: $0</h3>
@@ -278,6 +301,11 @@ function actualizar() {
 
   document.getElementById("total").textContent = "Total: $" + total;
   document.getElementById("contador").textContent = carrito.length;
+
+  // CAMBIO DE COLOR SI HAY PRODUCTOS
+  if (carrito.length > 0) {
+    document.getElementById("btnCarrito").style.background = "linear-gradient(135deg, #ff0000, #ff4d4d)";
+  }
 }
 
 function animarBoton() {
