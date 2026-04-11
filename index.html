@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Sprint</title>
+
+<style>
+:root {
+  --negro: #000;
+  --blanco: #fff;
+  --gris: #f2f2f2;
+}
+
+/* GENERAL */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: var(--blanco);
+  color: var(--negro);
+}
+
+/* HEADER */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 30px;
+  background: var(--negro);
+  color: var(--blanco);
+  position: relative;
+}
+
+.logo {
+  height: 80px;
+  position: absolute;
+  left: 30px;
+}
+
+header h1 {
+  font-size: 22px;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+/* CONTENIDO */
+.container {
+  max-width: 900px;
+  padding: 30px;
+}
+
+/* PRODUCTOS */
+.producto {
+  background: var(--gris);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.producto h3 {
+  margin-top: 0;
+}
+
+.producto p {
+  color: #555;
+}
+
+/* SELECT */
+select {
+  padding: 10px;
+  width: 100%;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: white;
+}
+
+/* BOTONES */
+button {
+  background: var(--negro);
+  color: var(--blanco);
+  border: none;
+  padding: 12px;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 100%;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #333;
+}
+
+/* CARRITO */
+.carrito {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 280px;
+  background: white;
+  height: 100%;
+  padding: 20px;
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+}
+
+.carrito h2 {
+  margin-top: 0;
+}
+
+.carrito li {
+  margin-bottom: 10px;
+}
+
+#total {
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+/* BOTÓN CARRITO */
+.carrito button {
+  margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <img src="Sin título-1-02.png" class="logo">
+  <h1>Las mejores gorras de ciclismo</h1>
+</header>
+
+<div class="container">
+
+  <div class="producto">
+    <h3>Producto 1</h3>
+    <p>Descripción del producto 1</p>
+    <select id="p1">
+      <option value="1000">1 unidad - $1000</option>
+      <option value="1800">2 unidades - $1800</option>
+    </select>
+    <button onclick="agregar('Producto 1', 'p1')">Agregar</button>
+  </div>
+
+  <div class="producto">
+    <h3>Producto 2</h3>
+    <p>Descripción del producto 2</p>
+    <select id="p2">
+      <option value="2000">1 unidad - $2000</option>
+      <option value="3500">2 unidades - $3500</option>
+    </select>
+    <button onclick="agregar('Producto 2', 'p2')">Agregar</button>
+  </div>
+
+</div>
+
+<!-- CARRITO -->
+<div class="carrito">
+  <h2>Carrito</h2>
+  <ul id="lista"></ul>
+  <h3 id="total">Total: $0</h3>
+
+  <button onclick="enviarWhatsApp()">Comprar por WhatsApp</button>
+</div>
+
+<script>
+let carrito = [];
+
+function agregar(nombre, idSelect) {
+  let select = document.getElementById(idSelect);
+  let precio = parseInt(select.value);
+  let texto = select.options[select.selectedIndex].text;
+
+  carrito.push({nombre, precio, texto});
+  actualizar();
+}
+
+function actualizar() {
+  let lista = document.getElementById("lista");
+  lista.innerHTML = "";
+  let total = 0;
+
+  carrito.forEach(item => {
+    let li = document.createElement("li");
+    li.textContent = item.nombre + " - " + item.texto;
+    lista.appendChild(li);
+    total += item.precio;
+  });
+
+  document.getElementById("total").textContent = "Total: $" + total;
+}
+
+function generarMensaje() {
+  let mensaje = "Hola! 👋 Quiero hacer un pedido:%0A%0A";
+
+  carrito.forEach(item => {
+    mensaje += "🧢 " + item.nombre + " - " + item.texto + "%0A";
+  });
+
+  mensaje += "%0AGracias!";
+
+  return mensaje;
+}
+
+function enviarWhatsApp() {
+  let numero = "5491123456789"; // 🔥 CAMBIA POR TU NUMERO
+  let url = "https://wa.me/" + numero + "?text=" + generarMensaje();
+  window.open(url, "_blank");
+}
+</script>
+
+</body>
+</html>
