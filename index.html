@@ -36,8 +36,6 @@ body {
   width: 100%;
   height: 100%;
   background: rgba(0,0,0,0.6);
-  top: 0;
-  left: 0;
 }
 
 .hero-content {
@@ -46,24 +44,12 @@ body {
   z-index: 2;
 }
 
-.hero h1 {
-  font-size: 32px;
-  margin: 0;
-  letter-spacing: 2px;
-}
-
-.hero p {
-  margin-top: 10px;
-  font-size: 14px;
-  letter-spacing: 2px;
-}
-
-/* LOGO MÁS GRANDE */
+/* LOGO */
 .logo {
   position: absolute;
   top: 20px;
   left: 30px;
-  height: 200px; /* AUMENTADO */
+  height: 120px;
   z-index: 3;
 }
 
@@ -86,16 +72,11 @@ body {
   transform: translateY(-3px);
 }
 
-.producto p {
-  color: #555;
-}
-
 /* SELECT */
 select {
   padding: 10px;
   width: 100%;
   margin: 10px 0;
-  border: 1px solid #ccc;
   border-radius: 5px;
 }
 
@@ -107,26 +88,41 @@ button {
   padding: 12px;
   cursor: pointer;
   border-radius: 5px;
-  width: 100%;
-  transition: 0.3s;
 }
 
-button:hover {
-  background: #333;
-}
-
-/* BOTÓN FLOTANTE */
+/* BOTÓN CARRITO */
 .btn-carrito {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
+  right: 15px;
+  bottom: 15px;
+  width: 65px;
+  height: 65px;
   background: black;
   color: white;
-  padding: 15px;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   z-index: 1000;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  transition: 0.2s;
+}
+
+.btn-carrito.animar {
+  transform: scale(1.2);
+}
+
+#contador {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  padding: 5px 8px;
+  border-radius: 50%;
 }
 
 /* CARRITO */
@@ -138,7 +134,6 @@ button:hover {
   height: 100%;
   background: white;
   padding: 20px;
-  border-left: 1px solid #ddd;
   transition: 0.3s;
   z-index: 999;
 }
@@ -147,9 +142,33 @@ button:hover {
   right: 0;
 }
 
-.cerrar {
-  background: red;
+.item {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 10px;
+}
+
+.eliminar {
+  background: red;
+  padding: 5px;
+  font-size: 12px;
+}
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  background: black;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.toast.show {
+  opacity: 1;
 }
 
 #total {
@@ -164,10 +183,9 @@ button:hover {
 <!-- HERO -->
 <div class="hero">
   <img src="Sin título-1-02.png" class="logo">
-
   <div class="hero-content">
     <h1>Las mejores gorras de ciclismo</h1>
-    <p>PERSONALIZA TU GORRITA O SELECCIONA ALGUNO DE NUESTROS DISEÑOS</p>
+    <p>MODELOS · DISEÑOS · PERSONALIZADOS</p>
   </div>
 </div>
 
@@ -195,8 +213,11 @@ button:hover {
 
 </div>
 
-<!-- BOTÓN CARRITO -->
-<div class="btn-carrito" onclick="toggleCarrito()">🛒</div>
+<!-- BOTÓN -->
+<div class="btn-carrito" id="btnCarrito" onclick="toggleCarrito()">
+  🛒
+  <span id="contador">0</span>
+</div>
 
 <!-- CARRITO -->
 <div class="carrito" id="carrito">
@@ -207,8 +228,11 @@ button:hover {
   <button onclick="enviarWhatsApp()">Comprar por WhatsApp</button>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast">Agregado al carrito</div>
+
 <script>
-let carrito = [];
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
 function toggleCarrito() {
   document.getElementById("carrito").classList.toggle("activo");
@@ -220,7 +244,20 @@ function agregar(nombre, idSelect) {
   let texto = select.options[select.selectedIndex].text;
 
   carrito.push({nombre, precio, texto});
+  guardar();
   actualizar();
+  animarBoton();
+  mostrarToast();
+}
+
+function eliminar(index) {
+  carrito.splice(index,1);
+  guardar();
+  actualizar();
+}
+
+function guardar() {
+  localStorage.setItem("carrito", JSON.stringify(carrito));
 }
 
 function actualizar() {
@@ -228,14 +265,31 @@ function actualizar() {
   lista.innerHTML = "";
   let total = 0;
 
-  carrito.forEach(item => {
+  carrito.forEach((item,index) => {
     let li = document.createElement("li");
-    li.textContent = item.nombre + " - " + item.texto;
+    li.className = "item";
+    li.innerHTML = `
+      ${item.nombre} - ${item.texto}
+      <button class="eliminar" onclick="eliminar(${index})">X</button>
+    `;
     lista.appendChild(li);
     total += item.precio;
   });
 
   document.getElementById("total").textContent = "Total: $" + total;
+  document.getElementById("contador").textContent = carrito.length;
+}
+
+function animarBoton() {
+  let btn = document.getElementById("btnCarrito");
+  btn.classList.add("animar");
+  setTimeout(() => btn.classList.remove("animar"), 200);
+}
+
+function mostrarToast() {
+  let toast = document.getElementById("toast");
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 1500);
 }
 
 function generarMensaje() {
@@ -245,7 +299,9 @@ function generarMensaje() {
     mensaje += "🧢 " + item.nombre + " - " + item.texto + "%0A";
   });
 
-  mensaje += "%0AGracias!";
+  mensaje += "%0ATotal: $" + carrito.reduce((acc,i)=>acc+i.precio,0);
+  mensaje += "%0A%0AGracias!";
+
   return mensaje;
 }
 
@@ -254,6 +310,9 @@ function enviarWhatsApp() {
   let url = "https://wa.me/" + numero + "?text=" + generarMensaje();
   window.open(url, "_blank");
 }
+
+// INICIAL
+actualizar();
 </script>
 
 </body>
