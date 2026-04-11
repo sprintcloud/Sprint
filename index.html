@@ -90,24 +90,29 @@ button {
   border-radius: 5px;
 }
 
-/* 🔥 BOTÓN CARRITO PRO */
+/* 🔥 BOTÓN CARRITO MEJORADO */
 .btn-carrito {
   position: fixed;
-  right: 15px;
-  bottom: 15px;
-  width: 70px;
-  height: 70px;
+  top: 20px;
+  right: 20px;
+  width: 65px;
+  height: 65px;
   background: linear-gradient(135deg, #000, #333);
   color: white;
   border-radius: 50%;
-  font-size: 28px;
+  font-size: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 1000;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+  z-index: 2000;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 3px solid white;
   transition: all 0.2s ease;
+}
+
+.btn-carrito:hover {
+  transform: scale(1.1);
 }
 
 .btn-carrito:active {
@@ -135,11 +140,11 @@ button {
 /* 📱 MOBILE */
 @media (max-width: 600px) {
   .btn-carrito {
-    width: 80px;
-    height: 80px;
-    font-size: 30px;
-    bottom: 20px;
-    right: 20px;
+    width: 70px;
+    height: 70px;
+    font-size: 28px;
+    top: 15px;
+    right: 15px;
   }
 
   #contador {
@@ -302,7 +307,6 @@ function actualizar() {
   document.getElementById("total").textContent = "Total: $" + total;
   document.getElementById("contador").textContent = carrito.length;
 
-  // CAMBIO DE COLOR SI HAY PRODUCTOS
   if (carrito.length > 0) {
     document.getElementById("btnCarrito").style.background = "linear-gradient(135deg, #ff0000, #ff4d4d)";
   }
@@ -328,7 +332,7 @@ function generarMensaje() {
   });
 
   mensaje += "%0ATotal: $" + carrito.reduce((acc,i)=>acc+i.precio,0);
-  mensaje += "%0A%0AGracias!";
+  mensaje += "%0AGracias!";
 
   return mensaje;
 }
@@ -339,7 +343,6 @@ function enviarWhatsApp() {
   window.open(url, "_blank");
 }
 
-// INICIAL
 actualizar();
 </script>
 
