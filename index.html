@@ -19,27 +19,52 @@ body {
   color: var(--negro);
 }
 
-/* HEADER */
-header {
+/* HERO */
+.hero {
+  position: relative;
+  height: 350px;
+  background: url('https://images.unsplash.com/photo-1517649763962-0c623066013b') center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 15px 30px;
-  background: var(--negro);
-  color: var(--blanco);
-  position: relative;
+  color: white;
 }
 
-.logo {
-  height: 80px;
+.hero::before {
+  content: "";
   position: absolute;
-  left: 30px;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  top: 0;
+  left: 0;
 }
 
-header h1 {
-  font-size: 22px;
-  letter-spacing: 2px;
+.hero-content {
+  position: relative;
   text-align: center;
+  z-index: 2;
+}
+
+.hero h1 {
+  font-size: 32px;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.hero p {
+  margin-top: 10px;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+/* LOGO MÁS GRANDE */
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+  height: 200px; /* AUMENTADO */
+  z-index: 3;
 }
 
 /* CONTENIDO */
@@ -54,10 +79,11 @@ header h1 {
   padding: 20px;
   margin-bottom: 20px;
   border-radius: 10px;
+  transition: 0.3s;
 }
 
-.producto h3 {
-  margin-top: 0;
+.producto:hover {
+  transform: translateY(-3px);
 }
 
 .producto p {
@@ -71,7 +97,6 @@ select {
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background: white;
 }
 
 /* BOTONES */
@@ -90,24 +115,40 @@ button:hover {
   background: #333;
 }
 
+/* BOTÓN FLOTANTE */
+.btn-carrito {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: black;
+  color: white;
+  padding: 15px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
 /* CARRITO */
 .carrito {
   position: fixed;
-  right: 0;
+  right: -320px;
   top: 0;
-  width: 280px;
-  background: white;
+  width: 300px;
   height: 100%;
+  background: white;
   padding: 20px;
   border-left: 1px solid #ddd;
-  overflow-y: auto;
+  transition: 0.3s;
+  z-index: 999;
 }
 
-.carrito h2 {
-  margin-top: 0;
+.carrito.activo {
+  right: 0;
 }
 
-.carrito li {
+.cerrar {
+  background: red;
   margin-bottom: 10px;
 }
 
@@ -115,20 +156,20 @@ button:hover {
   margin-top: 20px;
   font-weight: bold;
 }
-
-/* BOTÓN CARRITO */
-.carrito button {
-  margin-top: 10px;
-}
 </style>
 </head>
 
 <body>
 
-<header>
+<!-- HERO -->
+<div class="hero">
   <img src="Sin título-1-02.png" class="logo">
-  <h1>Las mejores gorras de ciclismo</h1>
-</header>
+
+  <div class="hero-content">
+    <h1>Las mejores gorras de ciclismo</h1>
+    <p>PERSONALIZA TU GORRITA O SELECCIONA ALGUNO DE NUESTROS DISEÑOS</p>
+  </div>
+</div>
 
 <div class="container">
 
@@ -154,17 +195,24 @@ button:hover {
 
 </div>
 
+<!-- BOTÓN CARRITO -->
+<div class="btn-carrito" onclick="toggleCarrito()">🛒</div>
+
 <!-- CARRITO -->
-<div class="carrito">
+<div class="carrito" id="carrito">
+  <button class="cerrar" onclick="toggleCarrito()">Cerrar</button>
   <h2>Carrito</h2>
   <ul id="lista"></ul>
   <h3 id="total">Total: $0</h3>
-
   <button onclick="enviarWhatsApp()">Comprar por WhatsApp</button>
 </div>
 
 <script>
 let carrito = [];
+
+function toggleCarrito() {
+  document.getElementById("carrito").classList.toggle("activo");
+}
 
 function agregar(nombre, idSelect) {
   let select = document.getElementById(idSelect);
@@ -198,12 +246,11 @@ function generarMensaje() {
   });
 
   mensaje += "%0AGracias!";
-
   return mensaje;
 }
 
 function enviarWhatsApp() {
-  let numero = "5491127155891"; // 🔥 CAMBIA POR TU NUMERO
+  let numero = "5491127155891";
   let url = "https://wa.me/" + numero + "?text=" + generarMensaje();
   window.open(url, "_blank");
 }
