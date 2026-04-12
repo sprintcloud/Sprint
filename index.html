@@ -5,210 +5,76 @@
 <title>Sprint</title>
 
 <style>
-:root {
-  --negro: #000;
-  --blanco: #fff;
-  --gris: #f2f2f2;
-}
+:root { --negro:#000; --blanco:#fff; --gris:#f2f2f2; }
+body { font-family:Arial; margin:0; background:var(--blanco); }
 
-/* GENERAL */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: var(--blanco);
-  color: var(--negro);
-}
-
-/* HERO */
 .hero {
-  position: relative;
-  height: 350px;
-  background: url('https://images.unsplash.com/photo-1517649763962-0c623066013b') center/cover no-repeat;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
+  position:relative; height:350px;
+  background:url('https://images.unsplash.com/photo-1517649763962-0c623066013b') center/cover;
+  display:flex; align-items:center; justify-content:center; color:white;
 }
-
 .hero::before {
-  content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
+  content:""; position:absolute; width:100%; height:100%;
+  background:rgba(0,0,0,0.6);
 }
+.hero-content { position:relative; z-index:2; text-align:center; }
 
-.hero-content {
-  position: relative;
-  text-align: center;
-  z-index: 2;
-}
+.logo { position:absolute; top:20px; left:30px; height:120px; z-index:3; }
 
-/* LOGO */
-.logo {
-  position: absolute;
-  top: 20px;
-  left: 30px;
-  height: 120px;
-  z-index: 3;
-}
+.container { max-width:900px; padding:30px; }
 
-/* CONTENIDO */
-.container {
-  max-width: 900px;
-  padding: 30px;
-}
-
-/* PRODUCTOS */
 .producto {
-  background: var(--gris);
-  padding: 20px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  transition: 0.3s;
+  background:var(--gris); padding:20px; margin-bottom:20px; border-radius:10px;
 }
+.producto img { width:100%; border-radius:10px; }
 
-.producto:hover {
-  transform: translateY(-3px);
-}
-
-/* SELECT */
-select {
-  padding: 10px;
-  width: 100%;
-  margin: 10px 0;
-  border-radius: 5px;
-}
-
-/* BOTONES */
 button {
-  background: var(--negro);
-  color: var(--blanco);
-  border: none;
-  padding: 12px;
-  cursor: pointer;
-  border-radius: 5px;
+  background:black; color:white; border:none; padding:10px;
+  border-radius:5px; cursor:pointer;
 }
 
-/* 🔥 BOTÓN CARRITO MEJORADO */
-.btn-carrito {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 65px;
-  height: 65px;
-  background: linear-gradient(135deg, #000, #333);
-  color: white;
-  border-radius: 50%;
-  font-size: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 2000;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  border: 3px solid white;
-  transition: all 0.2s ease;
-}
+/* ADMIN */
+.admin { background:#111; color:white; padding:20px; display:none; }
+.admin input { width:100%; margin:5px 0; padding:8px; }
 
-.btn-carrito:hover {
-  transform: scale(1.1);
-}
-
-.btn-carrito:active {
-  transform: scale(0.9);
-}
-
-.btn-carrito.animar {
-  transform: scale(1.25);
-}
-
-/* CONTADOR */
-#contador {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: #ff0000;
-  color: white;
-  font-size: 13px;
-  font-weight: bold;
-  padding: 6px 9px;
-  border-radius: 50%;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-}
-
-/* 📱 MOBILE */
-@media (max-width: 600px) {
-  .btn-carrito {
-    width: 70px;
-    height: 70px;
-    font-size: 28px;
-    top: 15px;
-    right: 15px;
-  }
-
-  #contador {
-    font-size: 14px;
-    padding: 7px 10px;
-  }
+.btn-admin {
+  position:fixed; bottom:15px; left:15px;
+  width:45px; height:45px; border-radius:50%;
+  background:black; color:white;
 }
 
 /* CARRITO */
+.btn-carrito {
+  position:fixed; top:20px; right:20px;
+  width:65px; height:65px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:black; color:white; font-size:26px;
+}
+
+#contador {
+  position:absolute; top:-5px; right:-5px;
+  background:red; color:white; padding:5px; border-radius:50%;
+}
+
 .carrito {
-  position: fixed;
-  right: -320px;
-  top: 0;
-  width: 300px;
-  height: 100%;
-  background: white;
-  padding: 20px;
-  transition: 0.3s;
-  z-index: 999;
+  position:fixed; right:-320px; top:0;
+  width:300px; height:100%;
+  background:white; padding:20px;
+  transition:.3s;
 }
+.carrito.activo { right:0; }
 
-.carrito.activo {
-  right: 0;
-}
-
-.item {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.eliminar {
-  background: red;
-  padding: 5px;
-  font-size: 12px;
-}
-
-/* TOAST */
 .toast {
-  position: fixed;
-  bottom: 100px;
-  right: 20px;
-  background: black;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 5px;
-  opacity: 0;
-  transition: 0.3s;
+  position:fixed; bottom:100px; right:20px;
+  background:black; color:white; padding:10px;
+  border-radius:5px; opacity:0;
 }
-
-.toast.show {
-  opacity: 1;
-}
-
-#total {
-  margin-top: 20px;
-  font-weight: bold;
-}
+.toast.show { opacity:1; }
 </style>
 </head>
 
 <body>
 
-<!-- HERO -->
 <div class="hero">
   <img src="Sin título-1-02.png" class="logo">
   <div class="hero-content">
@@ -217,133 +83,161 @@ button {
   </div>
 </div>
 
+<button class="btn-admin" onclick="activarAdmin()">⚙️</button>
+
+<div class="admin" id="adminPanel">
+  <h2>Agregar producto</h2>
+  <input id="nombre" placeholder="Nombre">
+  <input id="descripcion" placeholder="Descripción">
+  <input id="precio" placeholder="Precio">
+  <input type="file" id="imagen">
+  <button onclick="guardarProducto()">Guardar producto</button>
+</div>
+
 <div class="container">
-
-  <div class="producto">
-    <h3>Producto 1</h3>
-    <p>Descripción del producto 1</p>
-    <select id="p1">
-      <option value="1000">1 unidad - $1000</option>
-      <option value="1800">2 unidades - $1800</option>
-    </select>
-    <button onclick="agregar('Producto 1', 'p1')">Agregar</button>
-  </div>
-
-  <div class="producto">
-    <h3>Producto 2</h3>
-    <p>Descripción del producto 2</p>
-    <select id="p2">
-      <option value="2000">1 unidad - $2000</option>
-      <option value="3500">2 unidades - $3500</option>
-    </select>
-    <button onclick="agregar('Producto 2', 'p2')">Agregar</button>
-  </div>
-
+  <div id="productos"></div>
 </div>
 
-<!-- BOTÓN -->
-<div class="btn-carrito" id="btnCarrito" onclick="toggleCarrito()">
-  🛒
-  <span id="contador">0</span>
+<div class="btn-carrito" onclick="toggleCarrito()">🛒
+<span id="contador">0</span>
 </div>
 
-<!-- CARRITO -->
 <div class="carrito" id="carrito">
   <button onclick="toggleCarrito()">Cerrar</button>
   <h2>Carrito</h2>
   <ul id="lista"></ul>
   <h3 id="total">Total: $0</h3>
-  <button onclick="enviarWhatsApp()">Comprar por WhatsApp</button>
+  <button onclick="enviarWhatsApp()">Comprar</button>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">Agregado al carrito</div>
+<div class="toast" id="toast">Agregado</div>
 
 <script>
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-function toggleCarrito() {
+function toggleCarrito(){
   document.getElementById("carrito").classList.toggle("activo");
 }
 
-function agregar(nombre, idSelect) {
-  let select = document.getElementById(idSelect);
-  let precio = parseInt(select.value);
-  let texto = select.options[select.selectedIndex].text;
-
-  carrito.push({nombre, precio, texto});
-  guardar();
-  actualizar();
-  animarBoton();
-  mostrarToast();
-}
-
-function eliminar(index) {
-  carrito.splice(index,1);
-  guardar();
-  actualizar();
-}
-
-function guardar() {
+function agregar(nombre, precio){
+  carrito.push({nombre, precio});
   localStorage.setItem("carrito", JSON.stringify(carrito));
+  actualizar();
 }
 
-function actualizar() {
-  let lista = document.getElementById("lista");
-  lista.innerHTML = "";
-  let total = 0;
+function actualizar(){
+  let lista=document.getElementById("lista");
+  lista.innerHTML="";
+  let total=0;
 
-  carrito.forEach((item,index) => {
-    let li = document.createElement("li");
-    li.className = "item";
-    li.innerHTML = `
-      ${item.nombre} - ${item.texto}
-      <button class="eliminar" onclick="eliminar(${index})">X</button>
-    `;
-    lista.appendChild(li);
-    total += item.precio;
+  carrito.forEach((item,i)=>{
+    lista.innerHTML+=`<li>${item.nombre} - $${item.precio}
+    <button onclick="eliminar(${i})">X</button></li>`;
+    total+=item.precio;
   });
 
-  document.getElementById("total").textContent = "Total: $" + total;
-  document.getElementById("contador").textContent = carrito.length;
-
-  if (carrito.length > 0) {
-    document.getElementById("btnCarrito").style.background = "linear-gradient(135deg, #ff0000, #ff4d4d)";
-  }
+  document.getElementById("total").textContent="Total: $"+total;
+  document.getElementById("contador").textContent=carrito.length;
 }
 
-function animarBoton() {
-  let btn = document.getElementById("btnCarrito");
-  btn.classList.add("animar");
-  setTimeout(() => btn.classList.remove("animar"), 200);
+function eliminar(i){
+  carrito.splice(i,1);
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  actualizar();
 }
 
-function mostrarToast() {
-  let toast = document.getElementById("toast");
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 1500);
-}
-
-function generarMensaje() {
-  let mensaje = "Hola! 👋 Quiero hacer un pedido:%0A%0A";
-
-  carrito.forEach(item => {
-    mensaje += "🧢 " + item.nombre + " - " + item.texto + "%0A";
-  });
-
-  mensaje += "%0ATotal: $" + carrito.reduce((acc,i)=>acc+i.precio,0);
-  mensaje += "%0AGracias!";
-
-  return mensaje;
-}
-
-function enviarWhatsApp() {
-  let numero = "5491127155891";
-  let url = "https://wa.me/" + numero + "?text=" + generarMensaje();
-  window.open(url, "_blank");
+function enviarWhatsApp(){
+  let msg="Pedido:%0A";
+  carrito.forEach(i=> msg+=i.nombre+" - $"+i.precio+"%0A");
+  window.open("https://wa.me/5491127155891?text="+msg);
 }
 
 actualizar();
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyC6p5YWOiGq3XOxmoEbBZKLzO9_7zUsWZI",
+  authDomain:"sprinttienda-f52cc.firebaseapp.com",
+  projectId:"sprinttienda-f52cc",
+  storageBucket:"sprinttienda-f52cc.firebasestorage.app",
+  messagingSenderId:"520993829650",
+  appId:"1:520993829650:web:8ca662a13b1fc51bc7b9cb"
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const storage=getStorage(app);
+
+// ADMIN
+window.activarAdmin=function(){
+  let clave=prompt("Contraseña");
+  if(clave==="1234"){
+    document.getElementById("adminPanel").style.display="block";
+  }
+}
+
+// GUARDAR (ARREGLADO)
+window.guardarProducto=async function(){
+  let nombre=document.getElementById("nombre").value;
+  let descripcion=document.getElementById("descripcion").value;
+  let precio=document.getElementById("precio").value;
+  let file=document.getElementById("imagen").files[0];
+
+  if(!file){
+    alert("Subí una imagen");
+    return;
+  }
+
+  try{
+    const storageRef=ref(storage,'productos/'+Date.now()+file.name);
+    await uploadBytes(storageRef,file);
+    const url=await getDownloadURL(storageRef);
+
+    await addDoc(collection(db,"productos"),{
+      nombre,descripcion,precio,imagen:url
+    });
+
+    alert("Producto agregado");
+    cargarProductos();
+
+  }catch(e){
+    console.error(e);
+    alert("Error al guardar");
+  }
+}
+
+// CARGAR
+async function cargarProductos(){
+  const data=await getDocs(collection(db,"productos"));
+  productos.innerHTML="";
+
+  data.forEach(docu=>{
+    let p=docu.data();
+
+    productos.innerHTML+=`
+    <div class="producto">
+      <img src="${p.imagen}">
+      <h3>${p.nombre}</h3>
+      <p>${p.descripcion}</p>
+      <strong>$${p.precio}</strong>
+      <button onclick="agregar('${p.nombre}',${p.precio})">Agregar</button>
+      <button onclick="eliminarProducto('${docu.id}')">❌</button>
+    </div>`;
+  });
+}
+
+// ELIMINAR
+window.eliminarProducto=async function(id){
+  await deleteDoc(doc(db,"productos",id));
+  cargarProductos();
+}
+
+cargarProductos();
 </script>
 
 </body>
