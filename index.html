@@ -63,13 +63,6 @@ button {
   transition:.3s;
 }
 .carrito.activo { right:0; }
-
-.toast {
-  position:fixed; bottom:100px; right:20px;
-  background:black; color:white; padding:10px;
-  border-radius:5px; opacity:0;
-}
-.toast.show { opacity:1; }
 </style>
 </head>
 
@@ -109,8 +102,6 @@ button {
   <h3 id="total">Total: $0</h3>
   <button onclick="enviarWhatsApp()">Comprar</button>
 </div>
-
-<div class="toast" id="toast">Agregado</div>
 
 <script>
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
@@ -178,14 +169,15 @@ window.activarAdmin=function(){
   let clave=prompt("Contraseña");
   if(clave==="1234"){
     document.getElementById("adminPanel").style.display="block";
+    cargarProductos();
   }
 }
 
-// GUARDAR (ARREGLADO)
+// GUARDAR
 window.guardarProducto=async function(){
   let nombre=document.getElementById("nombre").value;
   let descripcion=document.getElementById("descripcion").value;
-  let precio=document.getElementById("precio").value;
+  let precio=parseInt(document.getElementById("precio").value);
   let file=document.getElementById("imagen").files[0];
 
   if(!file){
@@ -203,6 +195,12 @@ window.guardarProducto=async function(){
     });
 
     alert("Producto agregado");
+
+    document.getElementById("nombre").value="";
+    document.getElementById("descripcion").value="";
+    document.getElementById("precio").value="";
+    document.getElementById("imagen").value="";
+
     cargarProductos();
 
   }catch(e){
@@ -214,19 +212,22 @@ window.guardarProducto=async function(){
 // CARGAR
 async function cargarProductos(){
   const data=await getDocs(collection(db,"productos"));
-  productos.innerHTML="";
+  let contenedor=document.getElementById("productos");
+  contenedor.innerHTML="";
+
+  let esAdmin=document.getElementById("adminPanel").style.display==="block";
 
   data.forEach(docu=>{
     let p=docu.data();
 
-    productos.innerHTML+=`
+    contenedor.innerHTML+=`
     <div class="producto">
       <img src="${p.imagen}">
       <h3>${p.nombre}</h3>
       <p>${p.descripcion}</p>
       <strong>$${p.precio}</strong>
       <button onclick="agregar('${p.nombre}',${p.precio})">Agregar</button>
-      <button onclick="eliminarProducto('${docu.id}')">❌</button>
+      ${esAdmin ? `<button onclick="eliminarProducto('${docu.id}')">❌</button>` : ""}
     </div>`;
   });
 }
