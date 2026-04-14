@@ -173,15 +173,15 @@ window.activarAdmin=function(){
   }
 }
 
-// GUARDAR
-window.guardarProducto=async function(){
-  let nombre=document.getElementById("nombre").value;
-  let descripcion=document.getElementById("descripcion").value;
+// 🔥 FUNCIÓN CORREGIDA
+async function guardarProducto(){
+  let nombre=document.getElementById("nombre").value.trim();
+  let descripcion=document.getElementById("descripcion").value.trim();
   let precio=parseInt(document.getElementById("precio").value);
   let file=document.getElementById("imagen").files[0];
 
-  if(!file){
-    alert("Subí una imagen");
+  if(!nombre || !descripcion || !precio || !file){
+    alert("Completa todos los campos");
     return;
   }
 
@@ -191,7 +191,10 @@ window.guardarProducto=async function(){
     const url=await getDownloadURL(storageRef);
 
     await addDoc(collection(db,"productos"),{
-      nombre,descripcion,precio,imagen:url
+      nombre,
+      descripcion,
+      precio,
+      imagen:url
     });
 
     alert("Producto agregado");
@@ -204,10 +207,13 @@ window.guardarProducto=async function(){
     cargarProductos();
 
   }catch(e){
-    console.error(e);
-    alert("Error al guardar");
+    console.error("ERROR REAL:", e);
+    alert("Error: revisa consola (F12)");
   }
 }
+
+// 👇 ESTA LÍNEA SOLUCIONA TODO
+window.guardarProducto = guardarProducto;
 
 // CARGAR
 async function cargarProductos(){
