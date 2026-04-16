@@ -57,7 +57,7 @@ body {
   object-fit:contain;
 }
 
-select, input[type="number"]{
+input, button{
   width:100%;
   padding:8px;
   margin:5px 0;
@@ -67,10 +67,8 @@ button{
   background:black;
   color:white;
   border:none;
-  padding:10px;
   border-radius:5px;
   cursor:pointer;
-  width:100%;
 }
 
 /* ADMIN */
@@ -80,12 +78,6 @@ button{
   padding:20px;
   display:none;
 }
-.admin input{
-  width:100%;
-  margin:5px 0;
-  padding:8px;
-}
-
 .btn-admin{
   position:fixed;
   bottom:15px;
@@ -112,7 +104,6 @@ button{
   color:white;
   font-size:26px;
 }
-
 #contador{
   position:absolute;
   top:-5px;
@@ -122,7 +113,6 @@ button{
   padding:5px;
   border-radius:50%;
 }
-
 .carrito{
   position:fixed;
   right:-320px;
@@ -151,10 +141,11 @@ button{
 <!-- ADMIN -->
 <div class="admin" id="adminPanel">
   <h2>Agregar producto</h2>
+
   <input id="nombre" placeholder="Nombre">
   <input id="descripcion" placeholder="Descripción">
 
-  <h3>Precios por rango</h3>
+  <h3>Precios</h3>
   <input id="p1" placeholder="1 unidad">
   <input id="p2" placeholder="2-3 unidades">
   <input id="p3" placeholder="4-10 unidades">
@@ -231,7 +222,7 @@ import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.c
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey:"AIzaSy...",
+  apiKey:"AIzaSyC6p5YWOiGq3XOxmoEbBZKLzO9_7zUsWZI",
   authDomain:"sprinttienda-f52cc.firebaseapp.com",
   projectId:"sprinttienda-f52cc",
   storageBucket:"sprinttienda-f52cc.appspot.com",
@@ -239,56 +230,68 @@ const firebaseConfig = {
   appId:"1:520993829650:web:8ca662a13b1fc51bc7b9cb"
 };
 
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
-const storage=getStorage(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
-window.activarAdmin=function(){
+// ADMIN
+window.activarAdmin = function(){
   if(prompt("Contraseña")==="1234"){
     document.getElementById("adminPanel").style.display="block";
   }
-}
+};
 
-window.guardarProducto=async function(){
-  let file=imagen.files[0];
+// GUARDAR
+window.guardarProducto = async function(){
 
-  const precios={
-    p1:parseInt(p1.value),
-    p2:parseInt(p2.value),
-    p3:parseInt(p3.value),
-    p4:parseInt(p4.value),
-    p5:parseInt(p5.value)
+  const nombre = document.getElementById("nombre").value;
+  const descripcion = document.getElementById("descripcion").value;
+  const file = document.getElementById("imagen").files[0];
+
+  const precios = {
+    p1: parseInt(document.getElementById("p1").value),
+    p2: parseInt(document.getElementById("p2").value),
+    p3: parseInt(document.getElementById("p3").value),
+    p4: parseInt(document.getElementById("p4").value),
+    p5: parseInt(document.getElementById("p5").value)
   };
 
-  const storageRef=ref(storage,'productos/'+Date.now()+file.name);
+  if(!nombre || !descripcion || !file){
+    alert("Completa todo");
+    return;
+  }
+
+  const storageRef = ref(storage,'productos/'+Date.now()+file.name);
   await uploadBytes(storageRef,file);
-  const url=await getDownloadURL(storageRef);
+  const url = await getDownloadURL(storageRef);
 
   await addDoc(collection(db,"productos"),{
-    nombre:nombre.value,
-    descripcion:descripcion.value,
+    nombre,
+    descripcion,
     precios,
     imagen:url
   });
 
   alert("Producto agregado");
   cargarProductos();
-}
+};
 
+// CALCULO
 function calcularPrecio(precios, cantidad){
-  if(cantidad==1) return precios.p1 * cantidad;
-  if(cantidad<=3) return precios.p2 * cantidad;
-  if(cantidad<=10) return precios.p3 * cantidad;
-  if(cantidad<=30) return precios.p4 * cantidad;
-  return precios.p5 * cantidad;
+  if(cantidad==1) return precios.p1*cantidad;
+  if(cantidad<=3) return precios.p2*cantidad;
+  if(cantidad<=10) return precios.p3*cantidad;
+  if(cantidad<=30) return precios.p4*cantidad;
+  return precios.p5*cantidad;
 }
 
+// CARGAR
 async function cargarProductos(){
-  const data=await getDocs(collection(db,"productos"));
+  const data = await getDocs(collection(db,"productos"));
   productos.innerHTML="";
 
   data.forEach(doc=>{
-    let p=doc.data();
+    const p = doc.data();
 
     productos.innerHTML+=`
     <div class="producto">
@@ -296,20 +299,20 @@ async function cargarProductos(){
       <h3>${p.nombre}</h3>
       <p>${p.descripcion}</p>
 
-      <input type="number" min="1" value="1" id="cant_${doc.id}">
+      <input type="number" min="1" value="1" id="c_${doc.id}">
 
-      <button onclick="agregarProducto('${doc.id}', '${p.nombre}', ${JSON.stringify(p.precios)})">
+      <button onclick='agregarProducto("${doc.id}", "${p.nombre}", ${JSON.stringify(p.precios)})'>
         Agregar
       </button>
     </div>`;
   });
 }
 
-window.agregarProducto=function(id,nombre,precios){
-  let cantidad=parseInt(document.getElementById("cant_"+id).value);
-  let total=calcularPrecio(precios,cantidad);
+window.agregarProducto = function(id,nombre,precios){
+  let cantidad = parseInt(document.getElementById("c_"+id).value);
+  let total = calcularPrecio(precios,cantidad);
   agregar(nombre,total,cantidad);
-}
+};
 
 cargarProductos();
 </script>
