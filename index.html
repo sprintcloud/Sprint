@@ -5,7 +5,7 @@
 <title>Sprint</title>
 
 <style>
-:root { --negro:#000; --blanco:#fff; --gris:#f5f5f5; }
+:root { --negro:#000; --blanco:#fff; --gris:#f2f2f2; }
 
 body {
   font-family: Arial;
@@ -16,14 +16,13 @@ body {
 /* HERO */
 .hero {
   position:relative;
-  height:320px;
+  height:300px;
   background:url('https://images.unsplash.com/photo-1517649763962-0c623066013b') center/cover;
   display:flex;
   align-items:center;
   justify-content:center;
   color:white;
 }
-
 .hero::before {
   content:"";
   position:absolute;
@@ -31,99 +30,94 @@ body {
   height:100%;
   background:rgba(0,0,0,0.6);
 }
-
 .hero-content { position:relative; z-index:2; text-align:center; }
 
 /* GRID */
 .container {
-  max-width:1100px;
+  max-width:1000px;
   margin:auto;
   padding:20px;
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  grid-template-columns:repeat(2,1fr);
   gap:20px;
+}
+
+@media(max-width:600px){
+  .container{ grid-template-columns:1fr; }
 }
 
 /* PRODUCTO */
 .producto {
-  background:white;
-  border-radius:12px;
+  background:#fff;
+  border-radius:10px;
   padding:15px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
   text-align:center;
 }
 
-.producto img {
+.producto img{
   width:100%;
-  height:200px;
+  height:180px;
   object-fit:contain;
 }
 
-.producto select {
+select{
   width:100%;
   padding:8px;
   margin:10px 0;
 }
 
-.producto strong {
-  display:block;
-  font-size:18px;
-  margin:10px 0;
-}
-
-/* BOTONES */
-button {
+button{
   background:black;
   color:white;
   border:none;
   padding:10px;
-  border-radius:6px;
+  border-radius:5px;
   cursor:pointer;
   width:100%;
 }
 
 /* ADMIN */
-.admin {
-  display:none;
+.admin{
   background:#111;
   color:white;
   padding:20px;
+  display:none;
 }
-
-.admin input {
+.admin input{
   width:100%;
   margin:5px 0;
-  padding:10px;
+  padding:8px;
 }
 
-.btn-admin {
+.btn-admin{
   position:fixed;
-  bottom:20px;
-  left:20px;
-  width:50px;
-  height:50px;
+  bottom:15px;
+  left:15px;
+  width:45px;
+  height:45px;
   border-radius:50%;
   background:black;
   color:white;
 }
 
 /* CARRITO */
-.btn-carrito {
+.btn-carrito{
   position:fixed;
   top:20px;
   right:20px;
   width:65px;
   height:65px;
   border-radius:50%;
-  background:black;
-  color:white;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:25px;
+  background:black;
+  color:white;
+  font-size:26px;
 }
 
-#contador {
+#contador{
   position:absolute;
   top:-5px;
   right:-5px;
@@ -133,7 +127,7 @@ button {
   border-radius:50%;
 }
 
-.carrito {
+.carrito{
   position:fixed;
   right:-320px;
   top:0;
@@ -143,8 +137,7 @@ button {
   padding:20px;
   transition:.3s;
 }
-.carrito.activo { right:0; }
-
+.carrito.activo{ right:0; }
 </style>
 </head>
 
@@ -159,22 +152,29 @@ button {
 
 <button class="btn-admin" onclick="activarAdmin()">⚙️</button>
 
+<!-- ADMIN -->
 <div class="admin" id="adminPanel">
   <h2>Agregar producto</h2>
   <input id="nombre" placeholder="Nombre">
   <input id="descripcion" placeholder="Descripción">
 
-  <input id="precio1" placeholder="Precio 1 unidad">
-  <input id="precio2" placeholder="Precio 2 unidades">
-  <input id="precio3" placeholder="Precio 3 unidades">
+  <h3>Precios por cantidad</h3>
+  <input id="p1" placeholder="1 unidad">
+  <input id="p2" placeholder="2 unidades">
+  <input id="p3" placeholder="5 unidades">
+  <input id="p4" placeholder="10 unidades">
+  <input id="p5" placeholder="20 unidades">
+  <input id="p6" placeholder="50 unidades">
 
   <input type="file" id="imagen">
-
   <button onclick="guardarProducto()">Guardar producto</button>
 </div>
 
-<div class="container" id="productos"></div>
+<div class="container">
+  <div id="productos"></div>
+</div>
 
+<!-- CARRITO -->
 <div class="btn-carrito" onclick="toggleCarrito()">🛒
 <span id="contador">0</span>
 </div>
@@ -227,22 +227,16 @@ function enviarWhatsApp(){
   window.open("https://wa.me/5491127155891?text="+msg);
 }
 
-function agregarDesdeSelect(nombre, id){
-  let select = document.getElementById("select-"+id);
-  let precio = parseInt(select.value);
-  agregar(nombre, precio);
-}
-
 actualizar();
 </script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey:"AIzaSyC6p5YWOiGq3XOxmoEbBZKLzO9_7zUsWZI",
+  apiKey:"AIzaSy...",
   authDomain:"sprinttienda-f52cc.firebaseapp.com",
   projectId:"sprinttienda-f52cc",
   storageBucket:"sprinttienda-f52cc.appspot.com",
@@ -254,73 +248,62 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const storage=getStorage(app);
 
-/* ADMIN */
 window.activarAdmin=function(){
-  let clave=prompt("Contraseña");
-  if(clave==="1234"){
+  if(prompt("Contraseña") === "1234"){
     document.getElementById("adminPanel").style.display="block";
   }
 }
 
-/* GUARDAR */
 window.guardarProducto=async function(){
-  let nombre=document.getElementById("nombre").value;
-  let descripcion=document.getElementById("descripcion").value;
-
-  let precio1=parseInt(document.getElementById("precio1").value);
-  let precio2=parseInt(document.getElementById("precio2").value);
-  let precio3=parseInt(document.getElementById("precio3").value);
-
   let file=document.getElementById("imagen").files[0];
 
-  if(!nombre || !descripcion || !precio1 || !precio2 || !precio3 || !file){
-    alert("Completa todo");
-    return;
-  }
+  const precios={
+    p1:parseInt(p1.value),
+    p2:parseInt(p2.value),
+    p3:parseInt(p3.value),
+    p4:parseInt(p4.value),
+    p5:parseInt(p5.value),
+    p6:parseInt(p6.value)
+  };
 
   const storageRef=ref(storage,'productos/'+Date.now()+file.name);
   await uploadBytes(storageRef,file);
   const url=await getDownloadURL(storageRef);
 
   await addDoc(collection(db,"productos"),{
-    nombre,
-    descripcion,
-    imagen:url,
-    precios:[
-      {cantidad:1, precio:precio1},
-      {cantidad:2, precio:precio2},
-      {cantidad:3, precio:precio3}
-    ]
+    nombre:nombre.value,
+    descripcion:descripcion.value,
+    precios,
+    imagen:url
   });
 
-  alert("Producto guardado");
+  alert("Producto agregado");
   cargarProductos();
 }
 
-/* CARGAR */
 async function cargarProductos(){
   const data=await getDocs(collection(db,"productos"));
-  let contenedor=document.getElementById("productos");
-  contenedor.innerHTML="";
+  productos.innerHTML="";
 
-  data.forEach(docu=>{
-    let p=docu.data();
+  data.forEach(doc=>{
+    let p=doc.data();
 
-    contenedor.innerHTML+=`
+    productos.innerHTML+=`
     <div class="producto">
       <img src="${p.imagen}">
       <h3>${p.nombre}</h3>
       <p>${p.descripcion}</p>
 
-      <select id="select-${docu.id}">
-        ${p.precios.map(op => 
-          `<option value="${op.precio}">
-            ${op.cantidad} unidad(es) - $${op.precio}
-          </option>`
-        ).join("")}
+      <select onchange="cambiarPrecio(this)">
+        <option value="${p.precios.p1}">1 unidad - $${p.precios.p1}</option>
+        <option value="${p.precios.p2}">2 unidades - $${p.precios.p2}</option>
+        <option value="${p.precios.p3}">5 unidades - $${p.precios.p3}</option>
+        <option value="${p.precios.p4}">10 unidades - $${p.precios.p4}</option>
+        <option value="${p.precios.p5}">20 unidades - $${p.precios.p5}</option>
+        <option value="${p.precios.p6}">50 unidades - $${p.precios.p6}</option>
       </select>
 
-      <button onclick="agregarDesdeSelect('${p.nombre}','${docu.id}')">Agregar</button>
+      <button onclick="agregar('${p.nombre}', this.previousElementSibling.value)">Agregar</button>
     </div>`;
   });
 }
