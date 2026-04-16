@@ -25,7 +25,6 @@ body { font-family:Arial; margin:0; background:var(--blanco); }
   max-width: 1000px;
   margin: auto;
   padding: 20px;
-
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
@@ -48,17 +47,14 @@ body { font-family:Arial; margin:0; background:var(--blanco); }
 .producto img {
   width: 100%;
   max-height: 200px;
-  object-fit: contain; /* 👈 CLAVE (no recorta) */
+  object-fit: contain;
   margin-bottom: 10px;
 }
 
-.producto h3 {
-  margin: 10px 0 5px;
-}
-
-.producto p {
-  font-size: 14px;
-  color: #555;
+.producto select {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
 }
 
 .producto strong {
@@ -125,7 +121,7 @@ button {
   <h2>Agregar producto</h2>
   <input id="nombre" placeholder="Nombre">
   <input id="descripcion" placeholder="Descripción">
-  <input id="precio" placeholder="Precio">
+  <input id="precio" placeholder="Precio base">
   <input type="file" id="imagen">
   <button onclick="guardarProducto()">Guardar producto</button>
 </div>
@@ -151,12 +147,6 @@ let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
 function toggleCarrito(){
   document.getElementById("carrito").classList.toggle("activo");
-}
-
-function agregar(nombre, precio){
-  carrito.push({nombre, precio});
-  localStorage.setItem("carrito", JSON.stringify(carrito));
-  actualizar();
 }
 
 function actualizar(){
@@ -186,6 +176,19 @@ function enviarWhatsApp(){
   window.open("https://wa.me/5491127155891?text="+msg);
 }
 
+function actualizarPrecio(select, id){
+  document.getElementById("precio-"+id).textContent = "$" + select.value;
+}
+
+function agregarDesdeSelect(nombre, id){
+  let select = document.querySelector(`#select-${id}`);
+  let precio = parseInt(select.value);
+
+  carrito.push({nombre, precio});
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  actualizar();
+}
+
 actualizar();
 </script>
 
@@ -207,7 +210,6 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const storage=getStorage(app);
 
-// ADMIN
 window.activarAdmin=function(){
   let clave=prompt("Contraseña");
   if(clave==="1234"){
@@ -216,7 +218,6 @@ window.activarAdmin=function(){
   }
 }
 
-// 🔥 FUNCIÓN CORREGIDA
 async function guardarProducto(){
   let nombre=document.getElementById("nombre").value.trim();
   let descripcion=document.getElementById("descripcion").value.trim();
@@ -228,37 +229,27 @@ async function guardarProducto(){
     return;
   }
 
-  try{
-    const storageRef=ref(storage,'productos/'+Date.now()+file.name);
-    await uploadBytes(storageRef,file);
-    const url=await getDownloadURL(storageRef);
+  const storageRef=ref(storage,'productos/'+Date.now()+file.name);
+  await uploadBytes(storageRef,file);
+  const url=await getDownloadURL(storageRef);
 
-    await addDoc(collection(db,"productos"),{
-      nombre,
-      descripcion,
-      precio,
-      imagen:url
-    });
+  await addDoc(collection(db,"productos"),{
+    nombre,
+    descripcion,
+    imagen:url,
+    precios:[
+      {cantidad:1, precio:precio},
+      {cantidad:2, precio:Math.round(precio*1.8)},
+      {cantidad:3, precio:Math.round(precio*2.5)}
+    ]
+  });
 
-    alert("Producto agregado");
-
-    document.getElementById("nombre").value="";
-    document.getElementById("descripcion").value="";
-    document.getElementById("precio").value="";
-    document.getElementById("imagen").value="";
-
-    cargarProductos();
-
-  }catch(e){
-    console.error("ERROR REAL:", e);
-    alert("Error: revisa consola (F12)");
-  }
+  alert("Producto agregado");
+  cargarProductos();
 }
 
-// 👇 ESTA LÍNEA SOLUCIONA TODO
-window.guardarProducto = guardarProducto;
+window.guardarProducto=guardarProducto;
 
-// CARGAR
 async function cargarProductos(){
   const data=await getDocs(collection(db,"productos"));
   let contenedor=document.getElementById("productos");
@@ -274,14 +265,24 @@ async function cargarProductos(){
       <img src="${p.imagen}">
       <h3>${p.nombre}</h3>
       <p>${p.descripcion}</p>
-      <strong>$${p.precio}</strong>
-      <button onclick="agregar('${p.nombre}',${p.precio})">Agregar</button>
+
+      <select id="select-${docu.id}" onchange="actualizarPrecio(this,'${docu.id}')">
+        ${p.precios.map(op => 
+          `<option value="${op.precio}">
+            ${op.cantidad} unidad(es) - $${op.precio}
+          </option>`
+        ).join("")}
+      </select>
+
+      <strong id="precio-${docu.id}">$${p.precios[0].precio}</strong>
+
+      <button onclick="agregarDesdeSelect('${p.nombre}','${docu.id}')">Agregar</button>
+
       ${esAdmin ? `<button onclick="eliminarProducto('${docu.id}')">❌</button>` : ""}
     </div>`;
   });
 }
 
-// ELIMINAR
 window.eliminarProducto=async function(id){
   await deleteDoc(doc(db,"productos",id));
   cargarProductos();
