@@ -13,7 +13,6 @@ body {
   background: var(--blanco);
 }
 
-/* HERO */
 .hero {
   position:relative;
   height:300px;
@@ -32,7 +31,6 @@ body {
 }
 .hero-content { position:relative; z-index:2; text-align:center; }
 
-/* GRID */
 .container {
   max-width:1000px;
   margin:auto;
@@ -41,12 +39,10 @@ body {
   grid-template-columns:repeat(2,1fr);
   gap:20px;
 }
-
 @media(max-width:600px){
   .container{ grid-template-columns:1fr; }
 }
 
-/* PRODUCTO */
 .producto {
   background:#fff;
   border-radius:10px;
@@ -61,10 +57,10 @@ body {
   object-fit:contain;
 }
 
-select{
+select, input[type="number"]{
   width:100%;
   padding:8px;
-  margin:10px 0;
+  margin:5px 0;
 }
 
 button{
@@ -158,13 +154,12 @@ button{
   <input id="nombre" placeholder="Nombre">
   <input id="descripcion" placeholder="Descripción">
 
-  <h3>Precios por cantidad</h3>
+  <h3>Precios por rango</h3>
   <input id="p1" placeholder="1 unidad">
-  <input id="p2" placeholder="2 unidades">
-  <input id="p3" placeholder="5 unidades">
-  <input id="p4" placeholder="10 unidades">
-  <input id="p5" placeholder="20 unidades">
-  <input id="p6" placeholder="50 unidades">
+  <input id="p2" placeholder="2-3 unidades">
+  <input id="p3" placeholder="4-10 unidades">
+  <input id="p4" placeholder="10-30 unidades">
+  <input id="p5" placeholder="30-100 unidades">
 
   <input type="file" id="imagen">
   <button onclick="guardarProducto()">Guardar producto</button>
@@ -194,8 +189,8 @@ function toggleCarrito(){
   document.getElementById("carrito").classList.toggle("activo");
 }
 
-function agregar(nombre, precio){
-  carrito.push({nombre, precio});
+function agregar(nombre, precio, cantidad){
+  carrito.push({nombre, precio, cantidad});
   localStorage.setItem("carrito", JSON.stringify(carrito));
   actualizar();
 }
@@ -206,7 +201,7 @@ function actualizar(){
   let total=0;
 
   carrito.forEach((item,i)=>{
-    lista.innerHTML+=`<li>${item.nombre} - $${item.precio}
+    lista.innerHTML+=`<li>${item.nombre} x${item.cantidad} - $${item.precio}
     <button onclick="eliminar(${i})">X</button></li>`;
     total+=item.precio;
   });
@@ -223,7 +218,7 @@ function eliminar(i){
 
 function enviarWhatsApp(){
   let msg="Pedido:%0A";
-  carrito.forEach(i=> msg+=i.nombre+" - $"+i.precio+"%0A");
+  carrito.forEach(i=> msg+=`${i.nombre} x${i.cantidad} - $${i.precio}%0A`);
   window.open("https://wa.me/5491127155891?text="+msg);
 }
 
@@ -249,21 +244,20 @@ const db=getFirestore(app);
 const storage=getStorage(app);
 
 window.activarAdmin=function(){
-  if(prompt("Contraseña") === "1234"){
+  if(prompt("Contraseña")==="1234"){
     document.getElementById("adminPanel").style.display="block";
   }
 }
 
 window.guardarProducto=async function(){
-  let file=document.getElementById("imagen").files[0];
+  let file=imagen.files[0];
 
   const precios={
     p1:parseInt(p1.value),
     p2:parseInt(p2.value),
     p3:parseInt(p3.value),
     p4:parseInt(p4.value),
-    p5:parseInt(p5.value),
-    p6:parseInt(p6.value)
+    p5:parseInt(p5.value)
   };
 
   const storageRef=ref(storage,'productos/'+Date.now()+file.name);
@@ -281,6 +275,14 @@ window.guardarProducto=async function(){
   cargarProductos();
 }
 
+function calcularPrecio(precios, cantidad){
+  if(cantidad==1) return precios.p1 * cantidad;
+  if(cantidad<=3) return precios.p2 * cantidad;
+  if(cantidad<=10) return precios.p3 * cantidad;
+  if(cantidad<=30) return precios.p4 * cantidad;
+  return precios.p5 * cantidad;
+}
+
 async function cargarProductos(){
   const data=await getDocs(collection(db,"productos"));
   productos.innerHTML="";
@@ -294,18 +296,19 @@ async function cargarProductos(){
       <h3>${p.nombre}</h3>
       <p>${p.descripcion}</p>
 
-      <select onchange="cambiarPrecio(this)">
-        <option value="${p.precios.p1}">1 unidad - $${p.precios.p1}</option>
-        <option value="${p.precios.p2}">2 unidades - $${p.precios.p2}</option>
-        <option value="${p.precios.p3}">5 unidades - $${p.precios.p3}</option>
-        <option value="${p.precios.p4}">10 unidades - $${p.precios.p4}</option>
-        <option value="${p.precios.p5}">20 unidades - $${p.precios.p5}</option>
-        <option value="${p.precios.p6}">50 unidades - $${p.precios.p6}</option>
-      </select>
+      <input type="number" min="1" value="1" id="cant_${doc.id}">
 
-      <button onclick="agregar('${p.nombre}', this.previousElementSibling.value)">Agregar</button>
+      <button onclick="agregarProducto('${doc.id}', '${p.nombre}', ${JSON.stringify(p.precios)})">
+        Agregar
+      </button>
     </div>`;
   });
+}
+
+window.agregarProducto=function(id,nombre,precios){
+  let cantidad=parseInt(document.getElementById("cant_"+id).value);
+  let total=calcularPrecio(precios,cantidad);
+  agregar(nombre,total,cantidad);
 }
 
 cargarProductos();
